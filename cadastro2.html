@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro com XMLHttpRequest - ViaCEP</title>
+    <style>
+        /* Define o estilo do corpo da página */
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #667eea; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin: 0; 
+        }
+        
+        /* Define o estilo do container principal */
+        .container { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            max-width: 400px; 
+            width: 100%; 
+        }
+        
+        /* Define o estilo do título */
+        h1 { 
+            color: #333; 
+            text-align: center; 
+            margin-bottom: 25px; 
+        }
+        
+        /* Define o estilo dos rótulos dos inputs */
+        label { 
+            display: block; 
+            color: #555; 
+            font-weight: 500; 
+            margin-bottom: 5px; 
+            font-size: 14px; 
+        }
+        
+        /* Define o estilo dos inputs */
+        input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            margin-bottom: 15px; 
+            box-sizing: border-box; 
+            font-size: 14px; 
+        }
+        
+        /* Define o estilo do input ao receber foco */
+        input:focus { 
+            outline: none; 
+            border-color: #667eea; 
+            box-shadow: 0 0 0 2px rgba(102,126,234,0.1); 
+        }
+        
+        /* Define o estilo do botão */
+        button { 
+            width: 100%; 
+            padding: 10px; 
+            background: #667eea; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            margin-bottom: 15px; 
+        }
+        
+        /* Define o estilo do botão ao passar o mouse */
+        button:hover { 
+            background: #5568d3; 
+        }
+        
+        /* Define o estilo das mensagens de feedback */
+        .msg { 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-bottom: 15px; 
+            display: none; 
+            text-align: center; 
+            font-size: 13px; 
+        }
+        
+        /* Estilo da mensagem de sucesso (verde) */
+        .msg.ok { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb; 
+            display: block; 
+        }
+        
+        /* Estilo da mensagem de erro (vermelho) */
+        .msg.err { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb; 
+            display: block; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro - XMLHttpRequest</h1>
+        <!-- Div para exibir mensagens de sucesso ou erro -->
+        <div id="msg" class="msg"></div>
+
+        <!-- Label e input para digitar o CEP -->
+        <label>Digite seu CEP:</label>
+        <input type="text" id="cep" maxlength="8" placeholder="Ex: 01001000" />
+        
+        <!-- Botão para disparar a busca -->
+        <button onclick="buscarCep()">Buscar Endereço</button>
+
+        <!-- Label e input para o logradouro (readonly = apenas leitura) -->
+        <label>Logradouro:</label>
+        <input type="text" id="logradouro" readonly />
+
+        <!-- Label e input para o bairro -->
+        <label>Bairro:</label>
+        <input type="text" id="bairro" readonly />
+
+        <!-- Label e input para a cidade -->
+        <label>Cidade:</label>
+        <input type="text" id="cidade" readonly />
+
+        <!-- Label e input para o estado -->
+        <label>Estado:</label>
+        <input type="text" id="estado" readonly />
+    </div>
+
+    <script>
+        /* Função para buscar o CEP usando XMLHttpRequest */
+        function buscarCep() {
+            /* Pega o valor do input de CEP */
+            var cep = document.getElementById('cep').value;
+            
+            /* Remove caracteres que não são números */
+            cep = cep.replace(/\D/g, '');
+            
+            /* Pega a div onde vamos exibir mensagens */
+            var msg = document.getElementById('msg');
+            
+            /* Valida se o CEP tem 8 números */
+            if (!cep || cep.length !== 8) {
+                /* Exibe mensagem de erro */
+                msg.textContent = 'CEP inválido. Digite 8 números.';
+                msg.className = 'msg err';
+                return;
+            }
+
+            /* Cria a URL da API ViaCEP com o CEP digitado */
+            var url = 'https://viacep.com.br/ws/' + cep + '/json/';
+            
+            /* Limpa a mensagem anterior */
+            msg.className = 'msg';
+            msg.textContent = '';
+
+            /* Cria uma nova instância de XMLHttpRequest */
+            var xhr = new XMLHttpRequest();
+            
+            /* Define o método HTTP como GET e a URL */
+            xhr.open('GET', url, true);
+            
+            /* Define o tipo de conteúdo como JSON */
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            
+            /* Define o que fazer quando a requisição é concluída */
+            xhr.onload = function() {
+                /* Verifica se o status da resposta é 200 (sucesso) */
+                if (xhr.status === 200) {
+                    /* Converte a resposta de texto para objeto JSON */
+                    var data = JSON.parse(xhr.responseText);
+                    
+                    /* Verifica se o CEP foi encontrado */
+                    if (!data.erro) {
+                        /* Preenche os campos com os dados da API */
+                        document.getElementById('logradouro').value = data.logradouro;
+                        document.getElementById('bairro').value = data.bairro;
+                        document.getElementById('cidade').value = data.localidade;
+                        document.getElementById('estado').value = data.uf;
+                        
+                        /* Exibe mensagem de sucesso */
+                        msg.textContent = '✓ Endereço encontrado!';
+                        msg.className = 'msg ok';
+                    } else {
+                        /* Se o CEP não foi encontrado, exibe erro */
+                        msg.textContent = 'CEP não encontrado.';
+                        msg.className = 'msg err';
+                    }
+                } else {
+                    /* Se o status não for 200, exibe erro genérico */
+                    msg.textContent = 'Erro na requisição. Tente novamente.';
+                    msg.className = 'msg err';
+                }
+            };
+            
+            /* Define o que fazer se houver erro na requisição */
+            xhr.onerror = function() {
+                /* Exibe mensagem de erro de conexão */
+                msg.textContent = 'Erro de conexão. Verifique sua internet.';
+                msg.className = 'msg err';
+                console.error('Erro:', xhr.statusText);
+            };
+            
+            /* Envia a requisição para a API */
+            xhr.send();
+        }
+        
+        /* Permite buscar o CEP ao pressionar a tecla Enter */
+        document.getElementById('cep').addEventListener('keypress', function(e) {
+            /* Verifica se a tecla pressionada foi Enter (código 13) */
+            if (e.key === 'Enter') {
+                /* Chama a função buscarCep */
+                buscarCep();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Início - ViaCEP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Define o estilo do corpo da página */
+        body { 
+            /* Cria um fundo com gradiente de roxo claro para roxo escuro */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            /* Define a altura mínima para ocupar toda a tela */
+            min-height: 100vh; 
+            /* Centraliza o conteúdo horizontalmente */
+            display: flex; 
+            justify-content: center; 
+            /* Centraliza o conteúdo verticalmente */
+            align-items: center; 
+        }
+        
+        /* Define o estilo do container principal */
+        .container { 
+            /* Alinha o texto ao centro */
+            text-align: center; 
+        }
+        
+        /* Define o estilo do título h1 */
+        h1 { 
+            /* Define a cor do texto como branco */
+            color: white; 
+            /* Espaço abaixo do título */
+            margin-bottom: 30px; 
+            /* Deixa o texto mais grosso/destacado */
+            font-weight: 700; 
+        }
+        
+        /* Define o estilo dos parágrafos */
+        p { 
+            /* Define a cor do texto como branco semi-transparente */
+            color: rgba(255,255,255,0.9); 
+            /* Define o tamanho da fonte */
+            font-size: 18px; 
+            /* Espaço abaixo do parágrafo */
+            margin-bottom: 40px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo ao Cadastro ViaCEP</h1>
+        <p>Busque endereços por CEP de forma rápida e fácil</p>
+        <a href="cadastro.html" class="btn btn-light btn-lg">Ir para Cadastro (Fetch)</a>
+        <a href="cadastro2.html" class="btn btn-light btn-lg">Ir para Cadastro (XMLHttpRequest)</a>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

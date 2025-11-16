@@ -4,55 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consumindo API ViaCEP</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 400px; width: 100%; }
+        h1 { color: #333; text-align: center; margin-bottom: 25px; }
+        label { display: block; color: #555; font-weight: 500; margin-bottom: 5px; font-size: 14px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 15px; box-sizing: border-box; font-size: 14px; }
+        input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 2px rgba(102,126,234,0.1); }
+        button { width: 100%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; margin-bottom: 15px; }
+        button:hover { background: #5568d3; }
+        .msg { padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none; text-align: center; font-size: 13px; }
+        .msg.ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .msg.err { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+    </style>
 </head>
 <body>
-    <h1>Cadastro de Usuarios</h1>
+    <div class="container">
+        <h1>Cadastro de Usuários</h1>
+        <div id="msg" class="msg"></div>
 
-    <label>Digite seu CEP:</label>
-    <input type="text" id="cep" maxlength="8" />
-    <button onclick="buscarCep()">Buscar Endereço</button>
-    <br/><br/>
-    <label>Logradouro:</label>
-    <input type="text" id="logradouro" />
-    <br/><br/>
-    <label>Bairro:</label>
+        <label>Digite seu CEP:</label>
+        <input type="text" id="cep" maxlength="8" placeholder="Ex: 01001000" />
+        <button onclick="buscarCep()">Buscar Endereço</button>
 
-    <input type="text" id="bairro" />
-    <br/><br/>
-    <label>Cidade:</label>
-    <input type="text" id="cidade" />
-    <br/><br/>
-    <label>Estado:</label>
-    <input type="text" id="estado" />
-    <br/><br/>
+        <label>Logradouro:</label>
+        <input type="text" id="logradouro" readonly />
+
+        <label>Bairro:</label>
+        <input type="text" id="bairro" readonly />
+
+        <label>Cidade:</label>
+        <input type="text" id="cidade" readonly />
+
+        <label>Estado:</label>
+        <input type="text" id="estado" readonly />
 
     <script>    
         function buscarCep() {
-            var cep = document.getElementById('cep').value;
-            var url = 'https://viacep.com.br/ws/' + cep + '/json/';
-            // Tambem pode ser feito com crase `` 
-            //var url = `https://viacep.com.br/ws/${cep}/json/`;
+            var cep = document.getElementById('cep').value.replace(/\D/g, '');
+            var msg = document.getElementById('msg');
+            
+            if (!cep || cep.length !== 8) {
+                msg.textContent = 'CEP inválido. Digite 8 números.';
+                msg.className = 'msg err';
+                return;
+            }
 
-            // Realiza a requisição para a API ViaCEP
-            // fetch api JavaScript moderna para requisições HTTP
-            // Retorna uma Promise
+            var url = 'https://viacep.com.br/ws/' + cep + '/json/';
+            msg.className = 'msg';
+            msg.textContent = '';
+
             fetch(url)
-                .then(response => response.json()) // Converte a resposta para JSON
+                .then(response => response.json())
                 .then(data => {
-                    if (!data.erro) { // Se o CEP for encontrado
-                        // Preenche os campos do formulário com os dados retornados
+                    if (!data.erro) {
                         document.getElementById('logradouro').value = data.logradouro;
                         document.getElementById('bairro').value = data.bairro;
                         document.getElementById('cidade').value = data.localidade;
                         document.getElementById('estado').value = data.uf;
-                    } else { // Se o CEP não for encontrado
-                        alert('CEP não encontrado.');
+                        msg.textContent = '✓ Endereço encontrado!';
+                        msg.className = 'msg ok';
+                    } else {
+                        msg.textContent = 'CEP não encontrado.';
+                        msg.className = 'msg err';
                     }
                 })
-                .catch(error => { // Trata erros de rede ou outros erros
-                    console.error('Erro ao buscar o CEP:', error);
+                .catch(error => {
+                    console.error('Erro:', error);
+                    msg.textContent = 'Erro na busca. Tente novamente.';
+                    msg.className = 'msg err';
                 });
-        }       
+        }
+        
+        document.getElementById('cep').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') buscarCep();
+        });
     </script>
 
 </body>

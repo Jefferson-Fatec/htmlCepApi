@@ -26,5 +26,34 @@
     <input type="text" id="estado" />
     <br/><br/>
 
+    <script>    
+        function buscarCep() {
+            var cep = document.getElementById('cep').value;
+            var url = 'https://viacep.com.br/ws/' + cep + '/json/';
+            // Tambem pode ser feito com crase `` 
+            //var url = `https://viacep.com.br/ws/${cep}/json/`;
+
+            // Realiza a requisição para a API ViaCEP
+            // fetch api JavaScript moderna para requisições HTTP
+            // Retorna uma Promise
+            fetch(url)
+                .then(response => response.json()) // Converte a resposta para JSON
+                .then(data => {
+                    if (!data.erro) { // Se o CEP for encontrado
+                        // Preenche os campos do formulário com os dados retornados
+                        document.getElementById('logradouro').value = data.logradouro;
+                        document.getElementById('bairro').value = data.bairro;
+                        document.getElementById('cidade').value = data.localidade;
+                        document.getElementById('estado').value = data.uf;
+                    } else { // Se o CEP não for encontrado
+                        alert('CEP não encontrado.');
+                    }
+                })
+                .catch(error => { // Trata erros de rede ou outros erros
+                    console.error('Erro ao buscar o CEP:', error);
+                });
+        }       
+    </script>
+
 </body>
 </html>
